@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DNZ Intelligence</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f4f0;color:#1a1a1a}
+header{background:#1a1a1a;color:#fff;padding:14px 32px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:17px;font-weight:500}.logo span{color:#5dcaa5}
+.header-sub{font-size:12px;color:#888}
+.container{max-width:1100px;margin:0 auto;padding:28px 20px}
+.tabs{display:flex;gap:4px;margin-bottom:22px;background:#e8e7e2;border-radius:10px;padding:4px}
+.tab{flex:1;padding:9px;text-align:center;border-radius:7px;cursor:pointer;font-size:13px;font-weight:500;color:#666;border:none;background:transparent;transition:all .15s}
+.tab.active{background:#fff;color:#1a1a1a;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.panel{display:none}.panel.active{display:block}
+.card{background:#fff;border-radius:12px;border:.5px solid #e0dfd8;padding:20px 24px;margin-bottom:16px}
+.card-title{font-size:11px;font-weight:500;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:14px}
+.form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}
+label{font-size:13px;color:#666;display:block;margin-bottom:4px}
+input[type=number],select{width:100%;padding:8px 10px;border:.5px solid #d0cfc8;border-radius:8px;font-size:14px;background:#fff;color:#1a1a1a}
+.btn{padding:9px 18px;border-radius:8px;border:none;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:#1d9e75;color:#fff}.btn-primary:hover{background:#0f6e56}
+.btn-secondary{background:#f1f0ea;color:#1a1a1a;border:.5px solid #d0cfc8}.btn-secondary:hover{background:#e8e7e2}
+.btn-danger{background:#fcebeb;color:#a32d2d;border:.5px solid #f7c1c1}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin:14px 0}
+.metric{background:#f5f4f0;border-radius:8px;padding:12px}
+.metric .lbl{font-size:11px;color:#888;margin-bottom:4px}
+.metric .val{font-size:20px;font-weight:500}
+.val.green{color:#0f6e56}.val.red{color:#a32d2d}.val.amber{color:#854f0b}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:8px 12px;color:#888;font-weight:500;font-size:11px;text-transform:uppercase;border-bottom:.5px solid #e0dfd8}
+td{padding:10px 12px;border-bottom:.5px solid #f0efe8}
+tr:last-child td{border-bottom:none}
+.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:99px;font-weight:500}
+.badge-green{background:#e1f5ee;color:#0f6e56}
+.badge-red{background:#fcebeb;color:#a32d2d}
+.badge-amber{background:#faeeda;color:#854f0b}
+.badge-blue{background:#e6f1fb;color:#185fa5}
+.badge-gray{background:#f1f0ea;color:#666}
+.result-box{border-radius:10px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:14px}
+.result-ok{background:#e1f5ee;border:1px solid #9fe1cb}
+.result-no{background:#fcebeb;border:1px solid #f7c1c1}
+.rl{font-size:14px;font-weight:500}.rl.ok{color:#0f6e56}.rl.no{color:#a32d2d}
+.rv{font-size:28px;font-weight:500}.rv.ok{color:#0f6e56}.rv.no{color:#a32d2d}
+.formula{font-size:12px;color:#888;font-family:monospace;background:#f5f4f0;border-radius:6px;padding:8px 12px;margin-top:10px;line-height:1.7}
+.bar-wrap{height:8px;background:#e0dfd8;border-radius:99px;overflow:hidden;margin:6px 0 2px}
+.bar-fill{height:100%;border-radius:99px;transition:width .4s,background .4s}
+.ticks{display:flex;justify-content:space-between;font-size:10px;color:#aaa}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.sb{font-size:12px;padding:5px 12px;border-radius:99px;border:.5px solid #d0cfc8;background:transparent;color:#666;cursor:pointer;transition:all .15s}
+.sb.on{background:#e6f1fb;color:#185fa5;border-color:#b5d4f4;font-weight:500}
+.alert{padding:12px 16px;border-radius:8px;font-size:13px;margin:10px 0;line-height:1.5}
+.alert-info{background:#e6f1fb;color:#185fa5}
+.alert-success{background:#e1f5ee;color:#0f6e56}
+.alert-warn{background:#faeeda;color:#854f0b}
+.alert-err{background:#fcebeb;color:#a32d2d}
+.loading{text-align:center;padding:32px;color:#888;font-size:14px}
+.spinner{display:inline-block;width:20px;height:20px;border:2px solid #e0dfd8;border-top-color:#1d9e75;border-radius:50%;animation:spin .8s linear infinite;margin-right:8px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* UPLOAD AREA */
+.upload-area{border:2px dashed #d0cfc8;border-radius:12px;padding:32px;text-align:center;cursor:pointer;transition:all .2s;background:#fafaf8}
+.upload-area:hover,.upload-area.drag{border-color:#1d9e75;background:#f0faf6}
+.upload-icon{font-size:36px;margin-bottom:10px}
+.upload-title{font-size:15px;font-weight:500;margin-bottom:4px}
+.upload-sub{font-size:13px;color:#888}
+input[type=file]{display:none}
+.dataset-info{background:#f5f4f0;border-radius:8px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.dataset-label{font-size:13px;color:#666}
+.dataset-label strong{color:#1a1a1a}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">DNZ <span>Intelligence</span></div>
+  <div class="header-sub">Motor de Metas e Comissionamento com IA</div>
+</header>
+
+<div class="container">
+
+  <!-- DATASET BANNER -->
+  <div class="card" id="dataset-banner" style="margin-bottom:16px">
+    <div class="card-title">Dados carregados</div>
+    <div class="dataset-info" id="dataset-info">
+      <span class="dataset-label">Nenhum arquivo carregado — usando <strong>dados de exemplo</strong></span>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary" onclick="setTab('upload')">📂 Carregar meu arquivo</button>
+        <button class="btn btn-secondary" onclick="usarExemplo()">Usar exemplo</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab" onclick="setTab('upload')">📂 Importar Dados</button>
+    <button class="tab active" onclick="setTab('calibrador')">Módulo 1 — Calibrador de Metas</button>
+    <button class="tab" onclick="setTab('simulador')">Módulo 2 — Simulador</button>
+    <button class="tab" onclick="setTab('fechamento')">Fechamento do Mês</button>
+  </div>
+
+  <!-- ABA: UPLOAD -->
+  <div id="tab-upload" class="panel">
+    <div class="card">
+      <p class="card-title">Importar histórico de vendas</p>
+      <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()"
+           ondragover="event.preventDefault();this.classList.add('drag')"
+           ondragleave="this.classList.remove('drag')"
+           ondrop="onDrop(event)">
+        <div class="upload-icon">📊</div>
+        <div class="upload-title">Clique ou arraste seu arquivo aqui</div>
+        <div class="upload-sub">Aceita Excel (.xlsx) ou CSV — máx 10 MB</div>
+      </div>
+      <input type="file" id="file-input" accept=".xlsx,.xls,.csv" onchange="uploadArquivo(this.files[0])">
+
+      <div style="display:flex;gap:10px;margin-top:14px;align-items:center">
+        <button class="btn btn-secondary" onclick="baixarTemplate()">⬇ Baixar template Excel</button>
+        <span style="font-size:13px;color:#888">Preencha o template com os dados reais do seu time e importe aqui.</span>
+      </div>
+    </div>
+
+    <div id="upload-resultado"></div>
+
+    <div class="card">
+      <p class="card-title">Estrutura esperada do arquivo</p>
+      <table>
+        <tr><th>Coluna</th><th>Obrigatório</th><th>Valores aceitos</th><th>Exemplo</th></tr>
+        <tr><td><code>id</code></td><td><span class="badge badge-red">Sim</span></td><td>Código único do vendedor (sem espaços)</td><td>V001</td></tr>
+        <tr><td><code>nome</code></td><td><span class="badge badge-red">Sim</span></td><td>Nome completo</td><td>Ana Souza</td></tr>
+        <tr><td><code>mes</code></td><td><span class="badge badge-red">Sim</span></td><td>1 a 12</td><td>6</td></tr>
+        <tr><td><code>ano</code></td><td><span class="badge badge-red">Sim</span></td><td>Ano com 4 dígitos</td><td>2025</td></tr>
+        <tr><td><code>mrr</code></td><td><span class="badge badge-red">Sim</span></td><td>Receita realizada no mês (número)</td><td>15720</td></tr>
+        <tr><td><code>canal</code></td><td><span class="badge badge-red">Sim</span></td><td>inbound_crm · inbound_prm · outbound</td><td>inbound_prm</td></tr>
+        <tr><td><code>senioridade</code></td><td><span class="badge badge-red">Sim</span></td><td>jr · pl · sr</td><td>sr</td></tr>
+        <tr><td><code>observacao</code></td><td><span class="badge badge-gray">Não</span></td><td>Anotações livres</td><td>Primeiro mês</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ABA: CALIBRADOR -->
+  <div id="tab-calibrador" class="panel active">
+    <div class="card">
+      <p class="card-title">Parâmetros de calibração</p>
+      <div class="form-row">
+        <div>
+          <label>Mês alvo</label>
+          <select id="cal-mes">
+            <option value="1">Janeiro</option><option value="2">Fevereiro</option>
+            <option value="3">Março</option><option value="4">Abril</option>
+            <option value="5">Maio</option><option value="6">Junho</option>
+            <option value="7" selected>Julho</option><option value="8">Agosto</option>
+            <option value="9">Setembro</option><option value="10">Outubro</option>
+            <option value="11">Novembro</option><option value="12">Dezembro</option>
+          </select>
+        </div>
+        <div>
+          <label>Ano</label>
+          <input type="number" id="cal-ano" value="2025" min="2020" max="2035">
+        </div>
+        <div>
+          <label>Fator de desafio: <strong id="lbl-fator">+10%</strong></label>
+          <input type="range" min="1.00" max="1.30" step="0.01" value="1.10" id="sl-fator"
+            oninput="document.getElementById('lbl-fator').textContent='+'+Math.round((+this.value-1)*100)+'%'">
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:#aaa"><span>0%</span><span>30%</span></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="gerarMetas()">⚡ Gerar metas com IA</button>
+        <span style="font-size:12px;color:#888">A IA analisa o histórico de cada vendedor e sugere uma meta justa para o ciclo.</span>
+      </div>
+    </div>
+    <div id="resultado-metas">
+      <div class="alert alert-info">Configure os parâmetros acima e clique em "Gerar metas com IA".</div>
+    </div>
+  </div>
+
+  <!-- ABA: SIMULADOR -->
+  <div id="tab-simulador" class="panel">
+    <div class="card">
+      <p class="card-title">Dados do vendedor</p>
+      <div class="form-row">
+        <div><label>MRR realizado (R$)</label><input type="number" id="sim-mrr" value="15720" min="0" oninput="calcular()"></div>
+        <div><label>Meta do período (R$)</label><input type="number" id="sim-meta" value="10917" min="1" oninput="calcular()"></div>
+      </div>
+      <div style="margin-bottom:12px">
+        <label style="margin-bottom:6px">Canal</label>
+        <div class="seg">
+          <button class="sb on" data-c="inbound_crm" onclick="setCanal(this)">Inbound CRM ×1.0</button>
+          <button class="sb" data-c="inbound_prm" onclick="setCanal(this)">Inbound PRM ×1.4</button>
+          <button class="sb" data-c="outbound" onclick="setCanal(this)">Outbound ×1.6</button>
+        </div>
+      </div>
+      <div>
+        <label style="margin-bottom:6px">Senioridade</label>
+        <div class="seg">
+          <button class="sb" data-s="jr" onclick="setSen(this)">Júnior ×1.0</button>
+          <button class="sb on" data-s="pl" onclick="setSen(this)">Pleno ×1.1</button>
+          <button class="sb" data-s="sr" onclick="setSen(this)">Sênior ×1.2</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <p class="card-title">Resultado do cálculo</p>
+      <div class="metrics">
+        <div class="metric"><div class="lbl">% Atingido</div><div class="val" id="m-pct">144%</div></div>
+        <div class="metric"><div class="lbl">Acelerador</div><div class="val" id="m-acel">1.20×</div></div>
+        <div class="metric"><div class="lbl">Coef. canal</div><div class="val" id="m-cc">1.0×</div></div>
+        <div class="metric"><div class="lbl">Coef. senioridade</div><div class="val" id="m-cs">1.1×</div></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:#888;margin-bottom:4px">
+          <span>Atingimento da meta</span><span id="bar-lbl">144%</span>
+        </div>
+        <div class="bar-wrap"><div class="bar-fill" id="bar" style="width:96%;background:#1d9e75"></div></div>
+        <div class="ticks"><span>0%</span><span>80%</span><span>100%</span><span>140%+</span></div>
+      </div>
+      <div class="result-box result-ok" id="result-box">
+        <div>
+          <div class="rl ok" id="result-label">Elegível à comissão</div>
+          <div style="font-size:11px;color:#666;margin-top:2px">Comissão = MRR × canal × senioridade × acelerador</div>
+        </div>
+        <div class="rv ok" id="result-value">R$ 20.750,40</div>
+      </div>
+      <div class="formula" id="formula">R$15.720,00 × 1.0 × 1.1 × 1.20 = R$20.750,40</div>
+    </div>
+  </div>
+
+  <!-- ABA: FECHAMENTO -->
+  <div id="tab-fechamento" class="panel">
+    <div class="card">
+      <p class="card-title">Fechamento do mês</p>
+      <div class="alert alert-info">Informe o MRR realizado por cada vendedor. O sistema calcula metas (Módulo 1) e comissões (Módulo 2) automaticamente.</div>
+      <div class="form-row" style="margin-top:14px">
+        <div>
+          <label>Mês de fechamento</label>
+          <select id="fech-mes">
+            <option value="7" selected>Julho</option><option value="8">Agosto</option>
+            <option value="9">Setembro</option><option value="10">Outubro</option>
+            <option value="11">Novembro</option><option value="12">Dezembro</option>
+          </select>
+        </div>
+        <div><label>Ano</label><input type="number" id="fech-ano" value="2025"></div>
+        <div>
+          <label>Fator de desafio: <strong id="lbl-fator2">+10%</strong></label>
+          <input type="range" min="1.00" max="1.30" step="0.01" value="1.10" id="sl-fator2"
+            oninput="document.getElementById('lbl-fator2').textContent='+'+Math.round((+this.value-1)*100)+'%'">
+        </div>
+      </div>
+      <div id="fech-inputs" style="margin:14px 0">
+        <p style="font-size:13px;color:#888;margin-bottom:10px">MRR realizado por vendedor (R$):</p>
+        <div class="form-row" id="fech-campos"></div>
+      </div>
+      <button class="btn btn-primary" onclick="fecharMes()">📊 Calcular fechamento completo</button>
+    </div>
+    <div id="resultado-fechamento"></div>
+  </div>
+
+</div>
+
+<script>
+// ── NAVEGAÇÃO ─────────────────────────────────────────
+const TABS = ['upload','calibrador','simulador','fechamento'];
+function setTab(id) {
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',TABS[i]===id));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  if (id==='fechamento') montarCamposFechamento();
+}
+
+// ── UTILITÁRIOS ───────────────────────────────────────
+const fmt = n => 'R$ '+(+n).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmtPct = n => (+n).toFixed(1).replace('.',',')+'%';
+const MESES = ['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+// ── DATASET ───────────────────────────────────────────
+let vendedoresDataset = [];
+
+async function carregarDatasetAtual() {
+  const r = await fetch('/api/dataset_atual').then(r=>r.json());
+  vendedoresDataset = r.vendedores || [];
+  atualizarBanner(r);
+}
+
+function atualizarBanner(data) {
+  const info = document.getElementById('dataset-info');
+  const fonte = data.fonte === 'exemplo' ? 'dados de exemplo' : `<strong>${data.fonte}</strong>`;
+  info.innerHTML = `
+    <span class="dataset-label">${data.total_vendedores} vendedor(es) carregado(s) — fonte: ${fonte}</span>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-primary" onclick="setTab('upload')">📂 Trocar arquivo</button>
+      <button class="btn btn-secondary" onclick="usarExemplo()">Usar exemplo</button>
+    </div>`;
+}
+
+async function usarExemplo() {
+  const r = await fetch('/api/usar_exemplo',{method:'POST'}).then(r=>r.json());
+  vendedoresDataset = r.vendedores || [];
+  atualizarBanner({...r, fonte:'exemplo'});
+  document.getElementById('upload-resultado').innerHTML =
+    '<div class="alert alert-success">✓ Dados de exemplo carregados com sucesso.</div>';
+}
+
+// ── UPLOAD ────────────────────────────────────────────
+function baixarTemplate() { window.location='/template'; }
+
+function onDrop(e) {
+  e.preventDefault();
+  document.getElementById('upload-area').classList.remove('drag');
+  const f = e.dataTransfer.files[0];
+  if (f) uploadArquivo(f);
+}
+
+async function uploadArquivo(file) {
+  if (!file) return;
+  const el = document.getElementById('upload-resultado');
+  el.innerHTML = '<div class="loading"><span class="spinner"></span> Lendo arquivo...</div>';
+
+  const fd = new FormData();
+  fd.append('arquivo', file);
+
+  try {
+    const r = await fetch('/api/upload',{method:'POST',body:fd}).then(r=>r.json());
+    if (r.status === 'ok') {
+      vendedoresDataset = r.vendedores;
+      atualizarBanner({...r, fonte: file.name});
+      let linhas = r.vendedores.map(v =>
+        `<tr><td><strong>${v.nome}</strong></td><td>${v.id}</td>
+         <td>${v.canal.replace('inbound_','').toUpperCase()}</td>
+         <td>${v.senioridade.toUpperCase()}</td>
+         <td><span class="badge badge-blue">${v.meses} mês(es)</span></td></tr>`
+      ).join('');
+      el.innerHTML = `
+        <div class="alert alert-success">✓ Arquivo importado: <strong>${r.total_registros} registros</strong> de <strong>${r.total_vendedores} vendedores</strong>.</div>
+        <div class="card">
+          <p class="card-title">Vendedores importados</p>
+          <table><tr><th>Nome</th><th>ID</th><th>Canal</th><th>Senioridade</th><th>Histórico</th></tr>${linhas}</table>
+          <div style="margin-top:12px">
+            <button class="btn btn-primary" onclick="setTab('calibrador')">Gerar metas com IA →</button>
+          </div>
+        </div>`;
+    } else {
+      el.innerHTML = `<div class="alert alert-err">❌ Erro: ${r.mensagem}</div>`;
+    }
+  } catch(e) {
+    el.innerHTML = `<div class="alert alert-err">❌ Erro inesperado: ${e.message}</div>`;
+  }
+}
+
+// ── MÓDULO 1: CALIBRADOR ──────────────────────────────
+async function gerarMetas() {
+  const el = document.getElementById('resultado-metas');
+  el.innerHTML = '<div class="loading"><span class="spinner"></span> A IA está analisando o histórico...</div>';
+  const r = await fetch('/api/metas',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      mes: +document.getElementById('cal-mes').value,
+      ano: +document.getElementById('cal-ano').value,
+      fator_desafio: +document.getElementById('sl-fator').value,
+    })}).then(r=>r.json());
+
+  let linhas = r.map(v => {
+    if (v.status==='ok') {
+      const cCor = v.crescimento_mensal>0?'green':v.crescimento_mensal<-2?'red':'amber';
+      const sBadge = v.fator_sazonal>1.05?'badge-green':v.fator_sazonal<0.95?'badge-red':'badge-blue';
+      return `<tr>
+        <td><strong>${v.nome}</strong><br><span style="font-size:11px;color:#888">${v.vendedor_id}</span></td>
+        <td>${(v.canal||'').replace('inbound_','').toUpperCase()}</td>
+        <td>${(v.senioridade||'').toUpperCase()}</td>
+        <td style="font-size:12px">${v.meses_analisados} mês(es)</td>
+        <td>${fmt(v.tendencia_mrr)}</td>
+        <td><span class="badge ${sBadge}">${v.diagnostico.sazonalidade}</span></td>
+        <td class="${cCor}">${v.crescimento_mensal>0?'+':''}${fmtPct(v.crescimento_mensal)}/mês</td>
+        <td><strong>${fmt(v.meta_sugerida)}</strong><br>
+            <span style="font-size:11px;color:#888">${fmt(v.meta_minima)} – ${fmt(v.meta_maxima)}</span></td>
+      </tr>`;
+    }
+    return `<tr><td><strong>${v.nome}</strong></td><td colspan="7">
+      <span class="badge badge-amber">⚠ ${v.mensagem}</span></td></tr>`;
+  }).join('');
+
+  el.innerHTML = `
+    <div class="card">
+      <p class="card-title">Metas sugeridas pela IA — ${MESES[+document.getElementById('cal-mes').value]}/${document.getElementById('cal-ano').value}</p>
+      <table>
+        <tr><th>Vendedor</th><th>Canal</th><th>Sen.</th><th>Histórico</th><th>Tendência MRR</th><th>Sazonalidade</th><th>Crescimento</th><th>Meta sugerida / Intervalo</th></tr>
+        ${linhas}
+      </table>
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button class="btn btn-primary" onclick="setTab('fechamento');montarCamposFechamento()">Simular fechamento →</button>
+        <span style="font-size:12px;color:#888;align-self:center">O gestor revisa e aprova antes de publicar.</span>
+      </div>
+    </div>`;
+}
+
+// ── MÓDULO 2: SIMULADOR ───────────────────────────────
+let canal='inbound_crm', sen='pl';
+const CC={inbound_crm:1.0,inbound_prm:1.4,outbound:1.6};
+const CS={jr:1.0,pl:1.1,sr:1.2};
+const CN={inbound_crm:'CRM',inbound_prm:'PRM',outbound:'Outbound'};
+const SN={jr:'Júnior',pl:'Pleno',sr:'Sênior'};
+
+function acel(p){if(p<80)return 0;if(p<=99)return(p-30)/100;if(p<=140)return(100+(p-100)*.5)/100;return 1.20}
+
+function calcular(){
+  const mrr=+document.getElementById('sim-mrr').value;
+  const meta=+document.getElementById('sim-meta').value;
+  if(!meta)return;
+  const pct=(mrr/meta)*100, ac=acel(pct), cc=CC[canal], cs=CS[sen];
+  const com=ac>0?mrr*cc*cs*ac:0, ok=ac>0;
+  document.getElementById('m-pct').textContent=pct.toFixed(0)+'%';
+  document.getElementById('m-pct').className='val '+(pct<80?'red':pct<100?'amber':'green');
+  document.getElementById('m-acel').textContent=ac.toFixed(2)+'×';
+  document.getElementById('m-cc').textContent=cc.toFixed(1)+'×';
+  document.getElementById('m-cs').textContent=cs.toFixed(1)+'×';
+  document.getElementById('bar-lbl').textContent=pct.toFixed(0)+'%';
+  const bar=document.getElementById('bar');
+  bar.style.width=Math.min(pct/140*100,100)+'%';
+  bar.style.background=pct<80?'#e24b4a':pct<100?'#ba7517':'#1d9e75';
+  const box=document.getElementById('result-box'),rl=document.getElementById('result-label'),rv=document.getElementById('result-value');
+  if(ok){box.className='result-box result-ok';rl.className='rl ok';rv.className='rv ok';rl.textContent='Elegível à comissão';rv.textContent=fmt(com);}
+  else{box.className='result-box result-no';rl.className='rl no';rv.className='rv no';rl.textContent='Não elegível — abaixo de 80%';rv.textContent='R$ 0,00';}
+  document.getElementById('formula').innerHTML=
+    `${fmt(mrr)} × ${cc.toFixed(1)} (${CN[canal]}) × ${cs.toFixed(1)} (${SN[sen]}) × ${ac.toFixed(2)} = <strong>${fmt(com)}</strong>`;
+}
+function setCanal(b){document.querySelectorAll('[data-c]').forEach(x=>x.classList.remove('on'));b.classList.add('on');canal=b.dataset.c;calcular()}
+function setSen(b){document.querySelectorAll('[data-s]').forEach(x=>x.classList.remove('on'));b.classList.add('on');sen=b.dataset.s;calcular()}
+
+// ── FECHAMENTO ────────────────────────────────────────
+function montarCamposFechamento(){
+  const cont=document.getElementById('fech-campos');
+  cont.innerHTML='';
+  const lista = vendedoresDataset.length ? vendedoresDataset :
+    [{id:'V001',nome:'Ana Souza'},{id:'V002',nome:'Bruno Lima'},
+     {id:'V003',nome:'Carla Dias'},{id:'V004',nome:'Diego Nunes'}];
+  lista.forEach(v=>{
+    cont.innerHTML+=`<div><label>${v.nome}</label>
+      <input type="number" id="mrr-${v.id}" value="0" min="0" placeholder="R$ realizado"></div>`;
+  });
+}
+
+async function fecharMes(){
+  const lista = vendedoresDataset.length ? vendedoresDataset :
+    [{id:'V001'},{id:'V002'},{id:'V003'},{id:'V004'}];
+  const realizados={};
+  lista.forEach(v=>{realizados[v.id]=+(document.getElementById('mrr-'+v.id)?.value||0)});
+
+  const el=document.getElementById('resultado-fechamento');
+  el.innerHTML='<div class="loading"><span class="spinner"></span> Processando fechamento...</div>';
+
+  const r=await fetch('/api/ciclo_completo',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      mes_alvo:+document.getElementById('fech-mes').value,
+      ano_alvo:+document.getElementById('fech-ano').value,
+      fator_desafio:+document.getElementById('sl-fator2').value,
+      realizados,
+    })}).then(r=>r.json());
+
+  const pctTime=r.total_meta>0?(r.total_mrr/r.total_meta*100).toFixed(0):0;
+  const linhas=r.vendedores.map(v=>{
+    const cCor=v.pct_atingido>=100?'green':v.pct_atingido>=80?'amber':'red';
+    const sb=v.elegivel?'badge-green':'badge-red';
+    return `<tr>
+      <td><strong>${v.nome}</strong></td>
+      <td>${(v.canal||'').replace('inbound_','').toUpperCase()}</td>
+      <td>${(v.senioridade||'').toUpperCase()}</td>
+      <td>${fmt(v.meta)}</td>
+      <td>${fmt(v.mrr_realizado)}</td>
+      <td class="${cCor}"><strong>${v.pct_atingido}%</strong></td>
+      <td><span class="badge ${sb}">${v.elegivel?'Elegível':'Não elegível'}</span></td>
+      <td>${v.acelerador?v.acelerador.toFixed(2)+'×':'—'}</td>
+      <td><strong>${fmt(v.comissao_final)}</strong></td>
+    </tr>`;
+  }).join('');
+
+  el.innerHTML=`
+    <div class="card">
+      <p class="card-title">Resumo do time — ${MESES[+document.getElementById('fech-mes').value]}/${document.getElementById('fech-ano').value}</p>
+      <div class="metrics">
+        <div class="metric"><div class="lbl">MRR total realizado</div><div class="val">${fmt(r.total_mrr)}</div></div>
+        <div class="metric"><div class="lbl">Total de metas</div><div class="val">${fmt(r.total_meta)}</div></div>
+        <div class="metric"><div class="lbl">Atingimento do time</div><div class="val ${+pctTime>=100?'green':+pctTime>=80?'amber':'red'}">${pctTime}%</div></div>
+        <div class="metric"><div class="lbl">Total de comissões</div><div class="val green">${fmt(r.total_comissao)}</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <p class="card-title">Detalhamento por vendedor</p>
+      <table>
+        <tr><th>Vendedor</th><th>Canal</th><th>Sen.</th><th>Meta</th><th>MRR Real.</th><th>% Ating.</th><th>Status</th><th>Acelerador</th><th>Comissão</th></tr>
+        ${linhas}
+      </table>
+    </div>`;
+}
+
+// ── INIT ──────────────────────────────────────────────
+carregarDatasetAtual();
+calcular();
+montarCamposFechamento();
+</script>
+</body>
+</html>

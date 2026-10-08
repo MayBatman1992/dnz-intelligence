@@ -112,6 +112,7 @@ def api_comissao():
         resultado = calcular_comissao(
             mrr=float(body["mrr"]), meta=float(body["meta"]),
             canal=body["canal"], senioridade=body["senioridade"],
+            meses_contrato=int(body.get("meses_contrato", 12)),
         )
         return jsonify({"status": "ok", **resultado})
     except Exception as e:
@@ -130,7 +131,7 @@ def api_ciclo_completo():
     metas      = sugerir_metas_time(vendedores, mes_alvo, ano_alvo, fator)
     metas_dict = {m["vendedor_id"]: m for m in metas}
 
-    relatorio, total_mrr, total_comissao, total_meta = [], 0, 0, 0
+    relatorio, total_mrr, total_comissao, total_meta, total_contratado = [], 0, 0, 0, 0
 
     for v in vendedores:
         vid  = v["id"]
@@ -146,10 +147,12 @@ def api_ciclo_completo():
         comissao   = (calcular_comissao(mrr_real, meta_valor, v["canal"], v["senioridade"])
                       if mrr_real > 0
                       else {"mrr":0,"pct_atingido":0,"elegivel":False,
-                            "acelerador":0,"coef_canal":0,"coef_senioridade":0,"comissao_final":0})
+                            "acelerador":0,"coef_canal":0,"coef_senioridade":0,"comissao_final":0,
+                            "valor_contratado":0,"taxa_efetiva_pct":0})
 
         total_mrr      += mrr_real
         total_comissao += comissao["comissao_final"]
+        total_contratado += comissao["valor_contratado"]
         total_meta     += meta_valor
 
         relatorio.append({
@@ -160,6 +163,8 @@ def api_ciclo_completo():
             "elegivel": comissao["elegivel"],
             "acelerador": comissao["acelerador"],
             "comissao_final": comissao["comissao_final"],
+            "valor_contratado": comissao["valor_contratado"],
+            "taxa_efetiva_pct": comissao["taxa_efetiva_pct"],
             "diagnostico": meta.get("diagnostico", {}),
         })
 
@@ -168,6 +173,8 @@ def api_ciclo_completo():
         "total_mrr": round(total_mrr, 2),
         "total_meta": round(total_meta, 2),
         "total_comissao": round(total_comissao, 2),
+        "total_contratado": round(total_contratado, 2),
+        "taxa_efetiva_time_pct": round(total_comissao / total_contratado * 100, 2) if total_contratado else 0,
         "vendedores": relatorio,
     })
 

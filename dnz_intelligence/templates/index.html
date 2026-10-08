@@ -190,8 +190,9 @@ input[type=file]{display:none}
     <div class="card">
       <p class="card-title">Dados do vendedor</p>
       <div class="form-row">
-        <div><label>MRR realizado (R$)</label><input type="number" id="sim-mrr" value="15720" min="0" oninput="calcular()"></div>
-        <div><label>Meta do período (R$)</label><input type="number" id="sim-meta" value="10917" min="1" oninput="calcular()"></div>
+        <div><label>MRR da venda (R$ por mês)</label><input type="number" id="sim-mrr" value="15720" min="0" oninput="calcular()"></div>
+        <div><label>Meta do período — em MRR (R$)</label><input type="number" id="sim-meta" value="10917" min="1" oninput="calcular()"></div>
+        <div><label>Meses de contrato</label><input type="number" id="sim-meses" value="12" min="1" max="60" oninput="calcular()"></div>
       </div>
       <div style="margin-bottom:12px">
         <label style="margin-bottom:6px">Canal</label>
@@ -217,6 +218,8 @@ input[type=file]{display:none}
         <div class="metric"><div class="lbl">Acelerador</div><div class="val" id="m-acel">1.20×</div></div>
         <div class="metric"><div class="lbl">Coef. canal</div><div class="val" id="m-cc">1.0×</div></div>
         <div class="metric"><div class="lbl">Coef. senioridade</div><div class="val" id="m-cs">1.1×</div></div>
+        <div class="metric"><div class="lbl">Valor contratado (MRR × meses)</div><div class="val" id="m-tcv">R$ 188.640,00</div></div>
+        <div class="metric"><div class="lbl">Taxa efetiva sobre o contratado</div><div class="val green" id="m-taxa">11,00%</div></div>
       </div>
       <div>
         <div style="display:flex;justify-content:space-between;font-size:12px;color:#888;margin-bottom:4px">
@@ -228,11 +231,11 @@ input[type=file]{display:none}
       <div class="result-box result-ok" id="result-box">
         <div>
           <div class="rl ok" id="result-label">Elegível à comissão</div>
-          <div style="font-size:11px;color:#666;margin-top:2px">Comissão = MRR × canal × senioridade × acelerador</div>
+          <div style="font-size:11px;color:#666;margin-top:2px">Comissão = MRR × canal × senioridade × acelerador &nbsp;·&nbsp; taxa efetiva = comissão ÷ (MRR × meses)</div>
         </div>
         <div class="rv ok" id="result-value">R$ 20.750,40</div>
       </div>
-      <div class="formula" id="formula">R$15.720,00 × 1.0 × 1.1 × 1.20 = R$20.750,40</div>
+      <div class="formula" id="formula">R$15.720,00 × 1.0 × 1.1 × 1.20 = R$20.750,40 (11,00% de R$188.640,00)</div>
     </div>
   </div>
 
@@ -258,7 +261,7 @@ input[type=file]{display:none}
         </div>
       </div>
       <div id="fech-inputs" style="margin:14px 0">
-        <p style="font-size:13px;color:#888;margin-bottom:10px">MRR realizado por vendedor (R$):</p>
+        <p style="font-size:13px;color:#888;margin-bottom:10px">MRR realizado por vendedor (R$ por mês):</p>
         <div class="form-row" id="fech-campos"></div>
       </div>
       <button class="btn btn-primary" onclick="fecharMes()">📊 Calcular fechamento completo</button>
@@ -280,6 +283,7 @@ function setTab(id) {
 
 // ── UTILITÁRIOS ───────────────────────────────────────
 const fmt = n => 'R$ '+(+n).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmtPct2 = n => (+n).toFixed(2).replace('.',',')+'%';
 const fmtPct = n => (+n).toFixed(1).replace('.',',')+'%';
 const MESES = ['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
@@ -417,6 +421,10 @@ function calcular(){
   if(!meta)return;
   const pct=(mrr/meta)*100, ac=acel(pct), cc=CC[canal], cs=CS[sen];
   const com=ac>0?mrr*cc*cs*ac:0, ok=ac>0;
+  const meses=Math.max(1,+document.getElementById('sim-meses').value||12);
+  const tcv=mrr*meses, taxa=tcv>0?(com/tcv*100):0;
+  document.getElementById('m-tcv').textContent=fmt(tcv);
+  document.getElementById('m-taxa').textContent=fmtPct2(taxa);
   document.getElementById('m-pct').textContent=pct.toFixed(0)+'%';
   document.getElementById('m-pct').className='val '+(pct<80?'red':pct<100?'amber':'green');
   document.getElementById('m-acel').textContent=ac.toFixed(2)+'×';
@@ -430,7 +438,7 @@ function calcular(){
   if(ok){box.className='result-box result-ok';rl.className='rl ok';rv.className='rv ok';rl.textContent='Elegível à comissão';rv.textContent=fmt(com);}
   else{box.className='result-box result-no';rl.className='rl no';rv.className='rv no';rl.textContent='Não elegível — abaixo de 80%';rv.textContent='R$ 0,00';}
   document.getElementById('formula').innerHTML=
-    `${fmt(mrr)} × ${cc.toFixed(1)} (${CN[canal]}) × ${cs.toFixed(1)} (${SN[sen]}) × ${ac.toFixed(2)} = <strong>${fmt(com)}</strong>`;
+    `${fmt(mrr)} × ${cc.toFixed(1)} (${CN[canal]}) × ${cs.toFixed(1)} (${SN[sen]}) × ${ac.toFixed(2)} = <strong>${fmt(com)}</strong> (${fmtPct2(taxa)} de ${fmt(tcv)} contratados em ${meses} meses)`;
 }
 function setCanal(b){document.querySelectorAll('[data-c]').forEach(x=>x.classList.remove('on'));b.classList.add('on');canal=b.dataset.c;calcular()}
 function setSen(b){document.querySelectorAll('[data-s]').forEach(x=>x.classList.remove('on'));b.classList.add('on');sen=b.dataset.s;calcular()}
@@ -479,6 +487,8 @@ async function fecharMes(){
       <td><span class="badge ${sb}">${v.elegivel?'Elegível':'Não elegível'}</span></td>
       <td>${v.acelerador?v.acelerador.toFixed(2)+'×':'—'}</td>
       <td><strong>${fmt(v.comissao_final)}</strong></td>
+      <td>${fmt(v.valor_contratado||0)}</td>
+      <td>${v.elegivel?fmtPct2(v.taxa_efetiva_pct):'—'}</td>
     </tr>`;
   }).join('');
 
@@ -490,12 +500,14 @@ async function fecharMes(){
         <div class="metric"><div class="lbl">Total de metas</div><div class="val">${fmt(r.total_meta)}</div></div>
         <div class="metric"><div class="lbl">Atingimento do time</div><div class="val ${+pctTime>=100?'green':+pctTime>=80?'amber':'red'}">${pctTime}%</div></div>
         <div class="metric"><div class="lbl">Total de comissões</div><div class="val green">${fmt(r.total_comissao)}</div></div>
+        <div class="metric"><div class="lbl">Valor contratado (12 meses)</div><div class="val">${fmt(r.total_contratado)}</div></div>
+        <div class="metric"><div class="lbl">Comissão ÷ contratado</div><div class="val">${fmtPct2(r.taxa_efetiva_time_pct)}</div></div>
       </div>
     </div>
     <div class="card">
       <p class="card-title">Detalhamento por vendedor</p>
       <table>
-        <tr><th>Vendedor</th><th>Canal</th><th>Sen.</th><th>Meta</th><th>MRR Real.</th><th>% Ating.</th><th>Status</th><th>Acelerador</th><th>Comissão</th></tr>
+        <tr><th>Vendedor</th><th>Canal</th><th>Sen.</th><th>Meta</th><th>MRR Real.</th><th>% Ating.</th><th>Status</th><th>Acelerador</th><th>Comissão</th><th>Contratado</th><th>Taxa efetiva</th></tr>
         ${linhas}
       </table>
     </div>`;

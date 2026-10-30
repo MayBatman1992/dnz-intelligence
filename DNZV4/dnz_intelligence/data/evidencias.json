@@ -1,0 +1,260 @@
+{
+ "estudo_impacto": {
+  "titulo": "Estudo de impacto do novo modelo de comissionamento",
+  "vigencia": "Novo modelo vigente desde nov/2025",
+  "periodo": "Receita consolidada mês a mês, jan/2024 a jun/2026",
+  "metrica": "Crescimento da receita sobre o mesmo mês do ano anterior (YoY), antes e depois do novo modelo",
+  "canais": [
+   {
+    "canal": "Inbound CRM",
+    "yoy_antes": 33.6,
+    "yoy_depois": 56.4,
+    "aceleracao_pp": 22.8
+   },
+   {
+    "canal": "Inbound PRM",
+    "yoy_antes": 42.0,
+    "yoy_depois": 58.6,
+    "aceleracao_pp": 16.6
+   },
+   {
+    "canal": "Outbound",
+    "yoy_antes": 8.1,
+    "yoy_depois": 10.2,
+    "aceleracao_pp": 2.1
+   }
+  ],
+  "dezembro_titulo": "Dezembro, o mês mais sazonal do ano, fechou 2025 acima de 2024 nos três canais",
+  "dezembro": [
+   {
+    "canal": "Inbound CRM",
+    "variacao_pct": 101.3
+   },
+   {
+    "canal": "Inbound PRM",
+    "variacao_pct": 93.1
+   },
+   {
+    "canal": "Outbound",
+    "variacao_pct": 34.2
+   }
+  ],
+  "fonte": "Estudo interno da autora, com dados agregados e anonimizados de uma empresa B2B. Receitas absolutas omitidas por confidencialidade.",
+  "limitacoes": [
+   "Comparação de antes e depois: indica associação com o novo modelo, não prova que ele seja a causa.",
+   "Não há grupo de controle; outros fatores podem ter contribuído (tamanho do time, preços, mercado).",
+   "Dezembro é o mês de maior oscilação; a comparação de dezembro complementa, e não substitui, o YoY geral.",
+   "O canal Outbound teve a menor aceleração (+2,1 p.p.), diferença pequena frente à oscilação normal da receita mensal."
+  ]
+ },
+ "backtest": {
+  "titulo": "Backtest do calibrador de metas",
+  "base": {
+   "vendedores": 188,
+   "periodo": "jan/2025 a jun/2026",
+   "linhas": 1588,
+   "previsoes": 1002,
+   "vendedores_avaliados": 122
+  },
+  "metodo": "Janela expansível: para cada mês, o método vê só os meses anteriores e prevê o mês seguinte. Erro medido em WAPE (soma dos erros absolutos ÷ receita real).",
+  "todos": [
+   {
+    "Método": "Regra explicável (meses cheios × fator do status)",
+    "Previsões avaliadas": 1002,
+    "WAPE (%)": 33.58,
+    "Viés (%)": 2.37,
+    "Dentro de ±10% (%)": 19.3
+   },
+   {
+    "Método": "Gradient Boosting",
+    "Previsões avaliadas": 1002,
+    "WAPE (%)": 33.82,
+    "Viés (%)": 7.27,
+    "Dentro de ±10% (%)": 18.4
+   },
+   {
+    "Método": "Random Forest",
+    "Previsões avaliadas": 1002,
+    "WAPE (%)": 33.99,
+    "Viés (%)": 7.03,
+    "Dentro de ±10% (%)": 19.8
+   },
+   {
+    "Método": "Média móvel 3m (só meses cheios)",
+    "Previsões avaliadas": 1002,
+    "WAPE (%)": 37.22,
+    "Viés (%)": 5.38,
+    "Dentro de ±10% (%)": 18.1
+   },
+   {
+    "Método": "Heurística DNZ (atual)",
+    "Previsões avaliadas": 1002,
+    "WAPE (%)": 37.45,
+    "Viés (%)": -5.11,
+    "Dentro de ±10% (%)": 15.3
+   },
+   {
+    "Método": "Média móvel 3m",
+    "Previsões avaliadas": 1002,
+    "WAPE (%)": 37.69,
+    "Viés (%)": -1.55,
+    "Dentro de ±10% (%)": 15.7
+   },
+   {
+    "Método": "Heurística DNZ (só meses cheios)",
+    "Previsões avaliadas": 1002,
+    "WAPE (%)": 38.04,
+    "Viés (%)": 1.57,
+    "Dentro de ±10% (%)": 16.1
+   },
+   {
+    "Método": "Ingênuo (último mês)",
+    "Previsões avaliadas": 1002,
+    "WAPE (%)": 40.57,
+    "Viés (%)": 0.59,
+    "Dentro de ±10% (%)": 16.6
+   },
+   {
+    "Método": "Ridge",
+    "Previsões avaliadas": 1002,
+    "WAPE (%)": 45.86,
+    "Viés (%)": 0.77,
+    "Dentro de ±10% (%)": 13.0
+   }
+  ],
+  "cheia": [
+   {
+    "Método": "Média móvel 3m (só meses cheios)",
+    "Previsões avaliadas": 844,
+    "WAPE (%)": 30.6,
+    "Viés (%)": -3.16,
+    "Dentro de ±10% (%)": 20.1
+   },
+   {
+    "Método": "Gradient Boosting",
+    "Previsões avaliadas": 844,
+    "WAPE (%)": 30.68,
+    "Viés (%)": 5.53,
+    "Dentro de ±10% (%)": 19.9
+   },
+   {
+    "Método": "Random Forest",
+    "Previsões avaliadas": 844,
+    "WAPE (%)": 31.16,
+    "Viés (%)": 6.89,
+    "Dentro de ±10% (%)": 21.3
+   },
+   {
+    "Método": "Regra explicável (meses cheios × fator do status)",
+    "Previsões avaliadas": 844,
+    "WAPE (%)": 31.24,
+    "Viés (%)": 2.36,
+    "Dentro de ±10% (%)": 21.1
+   },
+   {
+    "Método": "Média móvel 3m",
+    "Previsões avaliadas": 844,
+    "WAPE (%)": 31.95,
+    "Viés (%)": -9.17,
+    "Dentro de ±10% (%)": 17.4
+   },
+   {
+    "Método": "Heurística DNZ (só meses cheios)",
+    "Previsões avaliadas": 844,
+    "WAPE (%)": 32.1,
+    "Viés (%)": -6.3,
+    "Dentro de ±10% (%)": 18.0
+   },
+   {
+    "Método": "Heurística DNZ (atual)",
+    "Previsões avaliadas": 844,
+    "WAPE (%)": 32.42,
+    "Viés (%)": -12.09,
+    "Dentro de ±10% (%)": 16.9
+   },
+   {
+    "Método": "Ingênuo (último mês)",
+    "Previsões avaliadas": 844,
+    "WAPE (%)": 35.01,
+    "Viés (%)": -5.46,
+    "Dentro de ±10% (%)": 18.4
+   },
+   {
+    "Método": "Ridge",
+    "Previsões avaliadas": 844,
+    "WAPE (%)": 41.68,
+    "Viés (%)": 2.71,
+    "Dentro de ±10% (%)": 14.2
+   }
+  ],
+  "bootstrap": {
+   "todos": {
+    "heuristica_vs_regra": [
+     3.87,
+     [
+      2.33,
+      5.33
+     ]
+    ],
+    "regra_vs_gb": [
+     -0.24,
+     [
+      -1.14,
+      0.75
+     ]
+    ],
+    "regra_vs_rf": [
+     -0.41,
+     [
+      -1.3,
+      0.47
+     ]
+    ]
+   },
+   "cheia": {
+    "heuristica_vs_regra": [
+     1.18,
+     [
+      -0.42,
+      2.78
+     ]
+    ],
+    "regra_vs_gb": [
+     0.56,
+     [
+      -0.38,
+      1.56
+     ]
+    ],
+    "regra_vs_rf": [
+     0.08,
+     [
+      -0.75,
+      0.97
+     ]
+    ]
+   }
+  },
+  "partida_a_frio": {
+   "avaliados": 153,
+   "wape_pct": 71.2,
+   "vies_pct": -23.8,
+   "fatores": {
+    "1": 0.34,
+    "2": 0.5
+   }
+  },
+  "leitura": [
+   "A regra explicável (média dos meses cheios × fator do status do mês) teve o menor erro, empatada com Gradient Boosting e Random Forest: a diferença não é distinguível de ruído (bootstrap por vendedor).",
+   "A regra explicável erra de 2,3 a 5,3 pontos percentuais a menos que a heurística anterior (IC95%, todos os meses).",
+   "Grande parte do ganho vem de uma informação de negócio: meses de Meta Parcial entregam cerca de metade do MRR de um mês cheio.",
+   "O MRR mensal por vendedor é muito volátil: o erro fica entre 30% e 46% em todos os métodos e só cerca de 20% das previsões caem em ±10%. Por isso a meta é apresentada com faixa de variação.",
+   "Decisão: usar a regra explicável. Ela não perde em precisão e permite ao gestor entender cada meta. O ML foi testado e fica como evolução."
+  ],
+  "limitacoes": [
+   "Vendedor novo (rampagem, 1º e 2º mês): erro típico de 71%. O sistema mostra apenas uma referência inicial de baixa confiança.",
+   "Sazonalidade não foi incluída: a base tem 18 meses e a validação exige 24 ou mais.",
+   "A base não trazia o valor da meta, então este backtest mede a previsão da receita, não o atingimento."
+  ]
+ }
+}

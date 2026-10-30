@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🎯 DNZ Intelligence</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><text y=%27.9em%27 font-size=%2790%27>🎯</text></svg>">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f4f0;color:#1a1a1a;font-size:14px}
+header{background:linear-gradient(135deg,#111 0%,#1a1a1a 55%,#0f3d2e 100%);color:#fff;padding:18px 32px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:3px solid #1d9e75;box-shadow:0 2px 12px rgba(0,0,0,.18)}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-icon{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#1d9e75,#5dcaa5);display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 2px 8px rgba(29,158,117,.45)}
+.logo{font-size:21px;font-weight:600;letter-spacing:-.3px}.logo span{color:#5dcaa5}
+.logo-tag{font-size:11px;color:#9fe1cb;letter-spacing:.08em;text-transform:uppercase;margin-top:1px}
+.header-sub{font-size:13px;color:#b8b8b0;background:rgba(255,255,255,.07);border:.5px solid rgba(255,255,255,.12);padding:6px 14px;border-radius:99px}
+.container{max-width:1180px;margin:0 auto;padding:22px 20px}
+.tabs{display:flex;gap:4px;margin-bottom:18px;background:#e8e7e2;border-radius:10px;padding:4px;overflow-x:auto}
+.tab{flex:1;min-width:max-content;padding:9px 12px;text-align:center;border-radius:7px;cursor:pointer;font-size:13px;font-weight:500;color:#666;border:none;background:transparent;white-space:nowrap}
+.tab.active{background:#fff;color:#1a1a1a;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.panel{display:none}.panel.active{display:block}
+.card{background:#fff;border-radius:12px;border:.5px solid #e0dfd8;padding:18px 22px;margin-bottom:14px}
+.card-title{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px}
+.form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:12px}
+label{font-size:12px;color:#666;display:block;margin-bottom:4px}
+input[type=number],select{width:100%;padding:7px 9px;border:.5px solid #d0cfc8;border-radius:8px;font-size:14px;background:#fff;color:#1a1a1a}
+input[type=range]{width:100%}
+.btn{padding:9px 18px;border-radius:8px;border:none;font-size:13px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:#1d9e75;color:#fff}.btn-primary:hover{background:#0f6e56}
+.btn-secondary{background:#f1f0ea;color:#1a1a1a;border:.5px solid #d0cfc8}.btn-secondary:hover{background:#e8e7e2}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:12px 0}
+.metric{background:#f5f4f0;border-radius:8px;padding:11px 12px}
+.metric .lbl{font-size:11px;color:#888;margin-bottom:3px}
+.metric .val{font-size:18px;font-weight:600}
+.green{color:#0f6e56}.red{color:#a32d2d}.amber{color:#854f0b}.gray{color:#888}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:7px 10px;color:#888;font-weight:600;font-size:11px;text-transform:uppercase;border-bottom:.5px solid #e0dfd8;white-space:nowrap}
+td{padding:9px 10px;border-bottom:.5px solid #f0efe8;vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr.hl td{background:#f0faf6}
+.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:99px;font-weight:500;white-space:nowrap}
+.b-green{background:#e1f5ee;color:#0f6e56}.b-red{background:#fcebeb;color:#a32d2d}.b-amber{background:#faeeda;color:#854f0b}.b-blue{background:#e6f1fb;color:#185fa5}.b-gray{background:#f1f0ea;color:#666}
+.alert{padding:11px 15px;border-radius:8px;font-size:13px;margin:10px 0;line-height:1.55}
+.a-info{background:#e6f1fb;color:#185fa5}.a-ok{background:#e1f5ee;color:#0f6e56}.a-warn{background:#faeeda;color:#854f0b}.a-err{background:#fcebeb;color:#a32d2d}
+.loading{text-align:center;padding:28px;color:#888}
+.spinner{display:inline-block;width:18px;height:18px;border:2px solid #e0dfd8;border-top-color:#1d9e75;border-radius:50%;animation:spin .8s linear infinite;margin-right:8px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.sb{font-size:12px;padding:5px 12px;border-radius:99px;border:.5px solid #d0cfc8;background:transparent;color:#666;cursor:pointer}
+.sb.on{background:#e6f1fb;color:#185fa5;border-color:#b5d4f4;font-weight:600}
+.upload-area{border:2px dashed #d0cfc8;border-radius:12px;padding:28px;text-align:center;cursor:pointer;background:#fafaf8}
+.upload-area:hover,.upload-area.drag{border-color:#1d9e75;background:#f0faf6}
+input[type=file]{display:none}
+.bar-wrap{height:8px;background:#e0dfd8;border-radius:99px;overflow:hidden;margin:6px 0 2px}.bar-fill{height:100%;border-radius:99px;transition:width .3s,background .3s}
+.result-box{border-radius:10px;padding:13px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:12px}
+.r-ok{background:#e1f5ee;border:1px solid #9fe1cb}.r-no{background:#fcebeb;border:1px solid #f7c1c1}
+.formula{font-size:12px;color:#777;font-family:monospace;background:#f5f4f0;border-radius:6px;padding:8px 12px;margin-top:10px;line-height:1.7}
+.det-row td{background:#fafaf8;color:#555;font-size:12px;line-height:1.6}
+.link{color:#185fa5;cursor:pointer;border:none;background:none;font-size:12px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+ul.lista{padding-left:18px;line-height:1.7;color:#444;font-size:13px}
+.scroll{max-height:380px;overflow:auto}
+.acel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:4px;font-size:11px}
+.acel-grid div{background:#f5f4f0;border-radius:5px;padding:3px 6px;display:flex;justify-content:space-between}
+small.hint{color:#999;font-size:11px}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="brand-icon">🎯</div>
+    <div>
+      <div class="logo">DNZ <span>Intelligence</span></div>
+      <div class="logo-tag">Metas justas · Comissões inteligentes</div>
+    </div>
+  </div>
+  <div class="header-sub">⚙️ Motor de Metas e Comissionamento orientado a dados</div>
+</header>
+
+<div class="container">
+  <div class="card" style="padding:14px 20px">
+    <div id="banner" style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"></div>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab" data-t="dados">📂 Dados</button>
+    <button class="tab active" data-t="metas">🎯 Metas · Módulo 1</button>
+    <button class="tab" data-t="simulador">🧮 Comissão · Módulo 2</button>
+    <button class="tab" data-t="cenarios">📈 Cenários</button>
+    <button class="tab" data-t="fechamento">✅ Fechamento</button>
+    <button class="tab" data-t="evidencias">🔬 Evidências</button>
+    <button class="tab" data-t="parametros">⚙️ Parâmetros</button>
+  </div>
+
+  <!-- DADOS -->
+  <div id="p-dados" class="panel">
+    <div class="card">
+      <p class="card-title">Importar histórico de vendas</p>
+      <div class="upload-area" id="drop">
+        <div style="font-size:32px">📊</div>
+        <div style="font-weight:600;margin:4px 0">Clique ou arraste o arquivo aqui</div>
+        <div class="gray" style="font-size:13px">Excel (.xlsx) ou CSV, até 10 MB</div>
+      </div>
+      <input type="file" id="file" accept=".xlsx,.xls,.csv">
+      <div style="display:flex;gap:10px;margin-top:12px;align-items:center;flex-wrap:wrap">
+        <button class="btn btn-secondary" id="b-template">⬇ Baixar template Excel</button>
+        <button class="btn btn-secondary" id="b-demo">Usar a demonstração</button>
+        <span class="gray" style="font-size:12px">Seus dados ficam só na sua sessão e são descartados depois de algumas horas.</span>
+      </div>
+    </div>
+    <div id="up-res"></div>
+    <div class="card">
+      <p class="card-title">Estrutura esperada do arquivo</p>
+      <div class="tw"><table>
+        <tr><th>Coluna</th><th>Obrigatória</th><th>Valores aceitos</th></tr>
+        <tr><td><code>id</code>, <code>nome</code></td><td><span class="badge b-red">Sim</span></td><td>Código único e nome (use pseudônimos em ambiente público)</td></tr>
+        <tr><td><code>mes</code>, <code>ano</code></td><td><span class="badge b-red">Sim</span></td><td>1 a 12 e ano com 4 dígitos</td></tr>
+        <tr><td><code>mrr</code></td><td><span class="badge b-red">Sim</span></td><td>MRR realizado no mês, em R$ (aceita 1.234,56)</td></tr>
+        <tr><td><code>canal</code></td><td><span class="badge b-red">Sim</span></td><td>Inbound CRM, Inbound PRM ou Outbound</td></tr>
+        <tr><td><code>senioridade</code></td><td><span class="badge b-red">Sim</span></td><td>Júnior, Pleno ou Sênior (jr, pl, sr)</td></tr>
+        <tr><td><code>observacao</code></td><td><span class="badge b-gray">Não</span></td><td>Meta Cheia, Meta Parcial ou Rampagem. Melhora a calibração</td></tr>
+        <tr><td><code>meta</code></td><td><span class="badge b-gray">Não</span></td><td>Meta do mês em R$. Permite comparar com as metas sugeridas</td></tr>
+      </table></div>
+      <p class="gray" style="font-size:12px;margin-top:8px">Canal e senioridade podem mudar mês a mês: cada linha vale para o seu mês.</p>
+    </div>
+  </div>
+
+  <!-- METAS -->
+  <div id="p-metas" class="panel active">
+    <div class="card">
+      <p class="card-title">Gerar metas para o próximo ciclo</p>
+      <div class="form-row">
+        <div><label>Mês alvo</label><select id="m-mes"></select></div>
+        <div><label>Ano</label><input type="number" id="m-ano" min="2020" max="2040"></div>
+        <div><label>Fator de desafio: <strong id="m-flbl">+10%</strong></label>
+          <input type="range" id="m-fator" min="1" max="1.3" step="0.01" value="1.10"></div>
+      </div>
+      <button class="btn btn-primary" id="b-metas">🎯 Gerar metas</button>
+      <div class="alert a-info" style="margin-top:12px">
+        <strong>Como a meta é calculada:</strong> média dos últimos 3 meses cheios do vendedor × fator do status do mês
+        (cheio, parcial) = previsão; previsão × fator de desafio = meta. Cada componente aparece em “Detalhe”.
+        O método foi escolhido por backtest (aba Evidências).
+      </div>
+    </div>
+    <div id="metas-res"><div class="alert a-info">Escolha o mês e clique em “Gerar metas”.</div></div>
+  </div>
+
+  <!-- SIMULADOR -->
+  <div id="p-simulador" class="panel">
+    <div class="card">
+      <p class="card-title">Dados da venda</p>
+      <div class="form-row">
+        <div><label>MRR realizado (R$ por mês)</label><input type="number" id="s-mrr" value="15720" min="0"></div>
+        <div><label>Meta do período, em MRR (R$)</label><input type="number" id="s-meta" value="10917" min="1"></div>
+        <div><label>Meses de contrato</label><input type="number" id="s-meses" value="12" min="1" max="60"></div>
+      </div>
+      <label>Canal</label>
+      <div class="seg" id="s-canal" style="margin-bottom:10px">
+        <button class="sb on" data-v="inbound_crm">Inbound CRM</button>
+        <button class="sb" data-v="inbound_prm">Inbound PRM</button>
+        <button class="sb" data-v="outbound">Outbound</button>
+      </div>
+      <label>Senioridade</label>
+      <div class="seg" id="s-sen">
+        <button class="sb" data-v="jr">Júnior</button>
+        <button class="sb on" data-v="pl">Pleno</button>
+        <button class="sb" data-v="sr">Sênior</button>
+      </div>
+    </div>
+    <div class="card">
+      <p class="card-title">Resultado</p>
+      <div class="metrics" id="s-metrics"></div>
+      <div class="bar-wrap"><div class="bar-fill" id="s-bar"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:#aaa"><span>0%</span><span>80%</span><span>100%</span><span>140%+</span></div>
+      <div class="result-box r-ok" id="s-box"><div><div style="font-weight:600" id="s-lbl"></div>
+        <div class="gray" style="font-size:11px">Comissão = MRR × canal × senioridade × acelerador</div></div>
+        <div style="font-size:26px;font-weight:600" id="s-val"></div></div>
+      <div class="formula" id="s-formula"></div>
+    </div>
+  </div>
+
+  <!-- CENÁRIOS -->
+  <div id="p-cenarios" class="panel">
+    <div class="card">
+      <p class="card-title">Simulação retrospectiva</p>
+      <p class="gray" style="font-size:13px;margin-bottom:10px">“Se eu tivesse usado estas metas neste mês, como o time teria ficado?” As metas são calibradas só com o histórico anterior ao mês escolhido e comparadas ao realizado.</p>
+      <div class="form-row">
+        <div><label>Mês</label><select id="c-mes"></select></div>
+        <div><label>Ano</label><input type="number" id="c-ano" min="2020" max="2040"></div>
+        <div><label>Fator de desafio: <strong id="c-flbl">+10%</strong></label>
+          <input type="range" id="c-fator" min="1" max="1.3" step="0.01" value="1.10"></div>
+      </div>
+      <button class="btn btn-primary" id="b-cen">📈 Simular</button>
+    </div>
+    <div id="cen-res"><div class="alert a-info">Escolha um mês dentro do período da base e clique em “Simular”.</div></div>
+  </div>
+
+  <!-- FECHAMENTO -->
+  <div id="p-fechamento" class="panel">
+    <div class="card">
+      <p class="card-title">Fechamento do mês</p>
+      <div class="form-row">
+        <div><label>Mês</label><select id="f-mes"></select></div>
+        <div><label>Ano</label><input type="number" id="f-ano" min="2020" max="2040"></div>
+        <div><label>Fator de desafio: <strong id="f-flbl">+10%</strong></label>
+          <input type="range" id="f-fator" min="1" max="1.3" step="0.01" value="1.10"></div>
+        <div><label>Meta da empresa (R$, opcional)</label><input type="number" id="f-emp" min="0" placeholder="Para conferir a soma das metas"></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+        <button class="btn btn-secondary" id="b-prefill">Preencher com o realizado da base</button>
+        <button class="btn btn-secondary" id="b-zero">Limpar</button>
+      </div>
+      <div class="scroll"><div class="form-row" id="f-campos"></div></div>
+      <button class="btn btn-primary" id="b-fech" style="margin-top:12px">✅ Calcular fechamento</button>
+    </div>
+    <div id="fech-res"></div>
+  </div>
+
+  <!-- EVIDÊNCIAS -->
+  <div id="p-evidencias" class="panel"><div id="ev-res"><div class="loading"><span class="spinner"></span>Carregando...</div></div></div>
+
+  <!-- PARÂMETROS -->
+  <div id="p-parametros" class="panel"><div id="par-res"><div class="loading"><span class="spinner"></span>Carregando...</div></div></div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const NC = {inbound_crm:'Inbound CRM', inbound_prm:'Inbound PRM', outbound:'Outbound'};
+const NS = {jr:'Júnior', pl:'Pleno', sr:'Sênior'};
+const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const fmt = n => n==null?'—':'R$ '+Number(n).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmt0 = n => n==null?'—':'R$ '+Number(n).toLocaleString('pt-BR',{maximumFractionDigits:0});
+const pc = (n,d=1) => n==null?'—':Number(n).toFixed(d).replace('.',',')+'%';
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function api(url, body){
+  const o = body===undefined ? {} : {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)};
+  try { const r = await fetch(url,o); return await r.json(); }
+  catch(e){ return {status:'erro',mensagem:'Não foi possível falar com o servidor. Se o site estava inativo, aguarde alguns segundos e tente de novo.'}; }
+}
+const loading = t => `<div class="loading"><span class="spinner"></span>${t}</div>`;
+const erro = m => `<div class="alert a-err">❌ ${esc(m)}</div>`;
+
+let E = null;            // estado do servidor
+let STATUS = {};         // status do mês por vendedor (override)
+const fillMeses = id => { $(id).innerHTML = MESES.map((m,i)=>`<option value="${i+1}">${m}</option>`).join(''); };
+['m-mes','c-mes','f-mes'].forEach(fillMeses);
+[['m-fator','m-flbl'],['c-fator','c-flbl'],['f-fator','f-flbl']].forEach(([a,b])=>{
+  $(a).oninput = () => { $(b).textContent = '+'+Math.round((+$(a).value-1)*100)+'%'; };
+});
+
+/* ---------- Navegação ---------- */
+const loaded = {};
+function setTab(t){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.t===t));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='p-'+t));
+  if (t==='evidencias' && !loaded.ev) carregarEvidencias();
+  if (t==='parametros') carregarParametros();
+  if (t==='fechamento') montarFechamento();
+}
+$('tabs').onclick = e => { const b = e.target.closest('.tab'); if (b) setTab(b.dataset.t); };
+
+/* ---------- Estado e banner ---------- */
+async function carregarEstado(){
+  E = await api('/api/estado');
+  if (!E || E.status==='erro') return;
+  const per = `${E.periodo_min.split('-').reverse().join('/')} a ${E.periodo_max.split('-').reverse().join('/')}`;
+  const origem = E.demo ? '<span class="badge b-amber">Demonstração: valores reescalados e vendedores pseudonimizados</span>'
+                        : `<span class="badge b-blue">${esc(E.fonte)}</span>`;
+  $('banner').innerHTML = `<div style="font-size:13px"><strong>${E.n_vendedores}</strong> vendedores · <strong>${E.n_periodos}</strong> meses (${per}) ${origem}
+    ${E.tem_obs?'':'<span class="badge b-gray">sem coluna de observação</span>'} ${E.tem_meta_real?'<span class="badge b-green">com metas reais</span>':''}</div>
+    <div style="display:flex;gap:8px"><button class="btn btn-primary" onclick="setTab('dados')">📂 Trocar dados</button></div>`;
+  $('m-mes').value = E.proximo.mes; $('m-ano').value = E.proximo.ano;
+  $('c-mes').value = E.ultimo.mes; $('c-ano').value = E.ultimo.ano;
+  $('f-mes').value = E.ultimo.mes; $('f-ano').value = E.ultimo.ano;
+  STATUS = {}; $('metas-res').innerHTML = '<div class="alert a-info">Escolha o mês e clique em “Gerar metas”.</div>';
+  $('cen-res').innerHTML = '<div class="alert a-info">Escolha um mês dentro do período da base e clique em “Simular”.</div>';
+  $('fech-res').innerHTML = ''; montarFechamento();
+}
+
+/* ---------- Dados ---------- */
+$('drop').onclick = () => $('file').click();
+$('drop').ondragover = e => { e.preventDefault(); $('drop').classList.add('drag'); };
+$('drop').ondragleave = () => $('drop').classList.remove('drag');
+$('drop').ondrop = e => { e.preventDefault(); $('drop').classList.remove('drag'); if (e.dataTransfer.files[0]) upload(e.dataTransfer.files[0]); };
+$('file').onchange = () => upload($('file').files[0]);
+$('b-template').onclick = () => { window.location = '/template'; };
+$('b-demo').onclick = async () => { await api('/api/usar_demo', {}); await carregarEstado(); $('up-res').innerHTML = '<div class="alert a-ok">✓ Demonstração carregada.</div>'; };
+async function upload(f){
+  if (!f) return;
+  $('up-res').innerHTML = loading('Lendo arquivo...');
+  const fd = new FormData(); fd.append('arquivo', f);
+  let j;
+  try { j = await (await fetch('/api/upload',{method:'POST',body:fd})).json(); } catch(e){ j = {status:'erro',mensagem:'Falha no envio do arquivo.'}; }
+  if (j.status!=='ok'){ $('up-res').innerHTML = erro(j.mensagem); return; }
+  await carregarEstado();
+  const curtos = j.vendedores.filter(v=>v.meses<3).length;
+  $('up-res').innerHTML = `<div class="alert a-ok">✓ Arquivo importado: <strong>${j.n_registros}</strong> registros de <strong>${j.n_vendedores}</strong> vendedores.</div>
+    ${curtos?`<div class="alert a-warn">${curtos} vendedor(es) com menos de 3 meses de histórico: o sistema não calibra meta para eles (mostra só uma referência inicial).</div>`:''}
+    ${!j.tem_obs?'<div class="alert a-warn">O arquivo não tem a coluna <code>observacao</code> (Meta Cheia, Meta Parcial, Rampagem). Sem ela, meses parciais e de rampagem entram como meses cheios e a meta fica menos precisa.</div>':''}
+    <button class="btn btn-primary" onclick="setTab('metas')">Gerar metas →</button>`;
+}
+
+/* ---------- Metas ---------- */
+$('b-metas').onclick = () => gerarMetas(true);
+async function gerarMetas(reset){
+  if (reset) STATUS = {};
+  $('metas-res').innerHTML = loading('Calculando metas...');
+  const j = await api('/api/metas', {mes:+$('m-mes').value, ano:+$('m-ano').value, fator_desafio:+$('m-fator').value, status_override:STATUS});
+  if (j.status!=='ok'){ $('metas-res').innerHTML = erro(j.mensagem); return; }
+  const cont = {}; j.metas.forEach(m => cont[m.status]=(cont[m.status]||0)+1);
+  const ROT = {ok:['b-green','Calibrada'],partida_a_frio:['b-amber','Partida a frio'],historico_curto:['b-amber','Histórico curto'],sem_referencia:['b-red','Sem referência'],sem_base:['b-red','Sem base']};
+  const f = j.fatores, of = j.origem_fatores;
+  let h = `<div class="card"><p class="card-title">Fatores aprendidos do histórico</p>
+    <div class="metrics">
+      <div class="metric"><div class="lbl">Fator Meta Cheia</div><div class="val">${f.cheia.toFixed(2).replace('.',',')}</div><small class="hint">${of.cheia==='historico'?'estimado do histórico':'valor padrão'}</small></div>
+      <div class="metric"><div class="lbl">Fator Meta Parcial</div><div class="val">${f.parcial.toFixed(2).replace('.',',')}</div><small class="hint">${of.parcial==='historico'?'estimado do histórico':'valor padrão'}</small></div>
+      <div class="metric"><div class="lbl">Meses na base</div><div class="val">${j.n_periodos}</div><small class="hint">${j.n_periodos<24?'sazonalidade não aplicada (exige 24+)':'sazonalidade ainda não aplicada'}</small></div>
+      <div class="metric"><div class="lbl">Metas calibradas</div><div class="val green">${cont.ok||0}</div><small class="hint">de ${j.metas.length} vendedores</small></div>
+    </div></div>`;
+  h += `<div class="card"><p class="card-title">Metas sugeridas · ${MESES[+$('m-mes').value-1]}/${$('m-ano').value}</p><div class="tw"><table>
+    <tr><th>Vendedor</th><th>Canal</th><th>Sen.</th><th>Status do mês</th><th>Situação</th><th>Previsão (faixa 10–90%)</th><th>Meta sugerida</th><th></th></tr>`;
+  j.metas.forEach((m,i) => {
+    const r = ROT[m.status]||['b-gray',m.status];
+    const sel = `<select class="st" data-id="${esc(m.vendedor_id)}" style="width:auto;padding:3px 6px;font-size:12px">${[['cheia','Meta Cheia'],['parcial','Meta Parcial'],['rampagem','Rampagem']].map(([v,t])=>`<option value="${v}" ${m.status_mes===v?'selected':''}>${t}</option>`).join('')}</select>`;
+    const faixa = m.faixa_p10!=null ? `${fmt0(m.previsao_central)} <small class="hint">(${fmt0(m.faixa_p10)} a ${fmt0(m.faixa_p90)})</small>` : (m.previsao_central!=null?fmt0(m.previsao_central):'—');
+    const tend = m.diagnostico && m.diagnostico.tendencia!=='indisponível' ? ` <span class="badge b-gray">${m.diagnostico.tendencia}${m.diagnostico.variacao_pct!=null?' '+(m.diagnostico.variacao_pct>0?'+':'')+String(m.diagnostico.variacao_pct).replace('.',',')+'%':''}</span>` : '';
+    h += `<tr><td><strong>${esc(m.nome)}</strong><br><small class="hint">${esc(m.vendedor_id)} · ${m.meses_historico} mês(es)</small></td>
+      <td>${NC[m.canal]||esc(m.canal)}</td><td>${NS[m.senioridade]||esc(m.senioridade)}</td><td>${sel}</td>
+      <td><span class="badge ${r[0]}">${r[1]}</span>${tend}</td><td>${faixa}</td>
+      <td><strong>${m.meta_sugerida!=null?fmt0(m.meta_sugerida):'Defina manualmente'}</strong></td>
+      <td><button class="link" data-det="${i}">Detalhe ▸</button></td></tr>
+      <tr class="det-row" id="det-${i}" style="display:none"><td colspan="8">${esc(m.explicacao||'')} ${m.mensagem?`<br><strong>${esc(m.mensagem)}</strong>`:''}</td></tr>`;
+  });
+  h += `</table></div><p class="gray" style="font-size:12px;margin-top:10px">O gestor revisa e aprova antes de publicar. Altere o “Status do mês” de um vendedor (por exemplo, férias = Meta Parcial) e a meta é recalculada.</p></div>`;
+  $('metas-res').innerHTML = h;
+}
+$('metas-res').onclick = e => {
+  const b = e.target.closest('[data-det]');
+  if (b){ const r = $('det-'+b.dataset.det); const abre = r.style.display==='none'; r.style.display = abre?'table-row':'none'; b.textContent = abre?'Detalhe ▾':'Detalhe ▸'; }
+};
+$('metas-res').onchange = e => {
+  const s = e.target.closest('select.st'); if (!s) return;
+  STATUS[s.dataset.id] = s.value; gerarMetas(false);
+};
+
+/* ---------- Simulador de comissão ---------- */
+let sCanal='inbound_crm', sSen='pl', tmr=null;
+function segInit(id, setter){
+  $(id).onclick = e => { const b = e.target.closest('.sb'); if(!b) return; $(id).querySelectorAll('.sb').forEach(x=>x.classList.remove('on')); b.classList.add('on'); setter(b.dataset.v); calcular(); };
+}
+segInit('s-canal', v => sCanal=v); segInit('s-sen', v => sSen=v);
+['s-mrr','s-meta','s-meses'].forEach(i => $(i).oninput = () => { clearTimeout(tmr); tmr = setTimeout(calcular, 180); });
+async function calcular(){
+  const j = await api('/api/comissao', {mrr:+$('s-mrr').value, meta:+$('s-meta').value, canal:sCanal, senioridade:sSen, meses_contrato:+$('s-meses').value||12});
+  if (j.status!=='ok'){ $('s-formula').textContent = j.mensagem||'Dados inválidos'; return; }
+  const cor = j.pct_atingido<80?'red':j.pct_atingido<100?'amber':'green';
+  $('s-metrics').innerHTML = [
+    ['% atingido', `<span class="${cor}">${pc(j.pct_atingido,0)}</span>`],
+    ['Acelerador', j.acelerador.toFixed(2).replace('.',',')+'×'],
+    ['Coef. canal', j.coef_canal.toFixed(1).replace('.',',')+'×'],
+    ['Coef. senioridade', j.coef_senioridade.toFixed(1).replace('.',',')+'×'],
+    [`Valor contratado (${j.meses_contrato} meses)`, fmt(j.valor_contratado)],
+    ['Taxa efetiva sobre o contratado', `<span class="green">${pc(j.taxa_efetiva_pct,2)}</span>`]
+  ].map(([l,v])=>`<div class="metric"><div class="lbl">${l}</div><div class="val" style="font-size:16px">${v}</div></div>`).join('');
+  const bar = $('s-bar'); bar.style.width = Math.min(j.pct_atingido/140*100,100)+'%';
+  bar.style.background = j.pct_atingido<80?'#e24b4a':j.pct_atingido<100?'#ba7517':'#1d9e75';
+  const ok = j.elegivel;
+  $('s-box').className = 'result-box '+(ok?'r-ok':'r-no');
+  $('s-lbl').className = ok?'green':'red'; $('s-lbl').textContent = ok?'Elegível à comissão':'Não elegível (abaixo do limiar)';
+  $('s-val').className = ok?'green':'red'; $('s-val').textContent = fmt(j.comissao_final);
+  $('s-formula').innerHTML = `${fmt(j.mrr)} × ${j.coef_canal.toFixed(1)} (${NC[sCanal]}) × ${j.coef_senioridade.toFixed(1)} (${NS[sSen]}) × ${j.acelerador.toFixed(2)} = <strong>${fmt(j.comissao_final)}</strong>`
+    + (ok?` (${pc(j.taxa_efetiva_pct,2)} de ${fmt(j.valor_contratado)} contratados em ${j.meses_contrato} meses)`:'');
+}
+
+/* ---------- Cenários ---------- */
+$('b-cen').onclick = async () => {
+  $('cen-res').innerHTML = loading('Simulando...');
+  const j = await api('/api/simulacao', {mes:+$('c-mes').value, ano:+$('c-ano').value, fator_desafio:+$('c-fator').value});
+  if (j.status!=='ok'){ $('cen-res').innerHTML = erro(j.mensagem); return; }
+  const s = j.resumo, ex = Object.entries(j.excluidos||{}).map(([k,v])=>`${v} (${k.replace(/_/g,' ')})`).join(', ');
+  const card = (l,v,c) => `<div class="metric"><div class="lbl">${l}</div><div class="val ${c||''}">${v}</div></div>`;
+  let h = `<div class="card"><p class="card-title">Resultado · ${MESES[j.mes-1]}/${j.ano} · desafio +${Math.round((s.fator_desafio-1)*100)}%</p>
+    <div class="metrics">
+      ${card('Vendedores avaliados', j.avaliados+' de '+j.vendedores_ativos)}
+      ${card('Elegíveis à comissão', pc(s.pct_elegiveis,0), s.pct_elegiveis>=70?'green':'amber')}
+      ${card('Atingiram a meta (≥100%)', pc(s.pct_100,0))}
+      ${card('No teto do acelerador', pc(s.pct_teto,0))}
+      ${card('Atingimento mediano', pc(s.atingimento_mediano,0)+` <small class="hint">(${pc(s.atingimento_p25,0)} a ${pc(s.atingimento_p75,0)})</small>`)}
+      ${card('Custo das comissões', fmt0(s.custo_comissoes))}
+      ${card('Comissão ÷ valor contratado', pc(s.taxa_efetiva_pct,2))}
+      ${card('Realizado ÷ metas do time', pc(s.aderencia_time_pct,0))}
+    </div>${ex?`<div class="alert a-warn">Não avaliados por falta de histórico: ${esc(ex)}.</div>`:''}</div>`;
+  const grp = (t,o,nm) => `<div class="card"><p class="card-title">${t}</p><div class="tw"><table><tr><th>Grupo</th><th>Vendedores</th><th>Atingimento mediano</th><th>Elegíveis</th><th>Taxa efetiva</th></tr>
+    ${Object.entries(o).map(([k,v])=>`<tr><td>${nm[k]||esc(k)}</td><td>${v.n}</td><td>${pc(v.atingimento_mediano,0)}</td><td>${pc(v.pct_elegiveis,0)}</td><td>${pc(v.taxa_efetiva_pct,2)}</td></tr>`).join('')}</table></div></div>`;
+  h += `<div class="grid2">${grp('Equilíbrio por canal',s.por_canal,NC)}${grp('Equilíbrio por senioridade',s.por_senioridade,NS)}</div>`;
+  h += `<div class="card"><p class="card-title">E se o fator de desafio fosse outro?</p><div class="tw"><table>
+    <tr><th>Desafio</th><th>Elegíveis</th><th>Atingiram a meta</th><th>No teto</th><th>Atingimento mediano</th><th>Custo das comissões</th><th>Comissão ÷ contratado</th></tr>
+    ${j.sweep.map(x=>`<tr class="${Math.abs(x.fator_desafio-s.fator_desafio)<0.0051?'hl':''}"><td><strong>+${Math.round((x.fator_desafio-1)*100)}%</strong></td><td>${pc(x.pct_elegiveis,0)}</td><td>${pc(x.pct_100,0)}</td><td>${pc(x.pct_teto,0)}</td><td>${pc(x.atingimento_mediano,0)}</td><td>${fmt0(x.custo_comissoes)}</td><td>${pc(x.taxa_efetiva_pct,2)}</td></tr>`).join('')}</table></div>
+    <p class="gray" style="font-size:12px;margin-top:8px">Metas mais desafiadoras reduzem o custo e a parcela de vendedores elegíveis. A decisão é de política: o sistema mostra o preço de cada escolha.</p></div>`;
+  if (j.comparativo_meta_real){
+    const c = j.comparativo_meta_real, r = c.reais, g = c.sugeridas;
+    const linha = (t,x) => `<tr><td>${t}</td><td>${pc(x.pct_elegiveis,0)}</td><td>${pc(x.pct_100,0)}</td><td>${pc(x.atingimento_mediano,0)}</td><td>${fmt0(x.custo_comissoes)}</td><td>${pc(x.taxa_efetiva_pct,2)}</td></tr>`;
+    h += `<div class="card"><p class="card-title">Metas reais da base × metas sugeridas (${c.n} vendedores com meta real)</p><div class="tw"><table>
+      <tr><th>Metas</th><th>Elegíveis</th><th>Atingiram a meta</th><th>Atingimento mediano</th><th>Custo das comissões</th><th>Comissão ÷ contratado</th></tr>
+      ${linha('Reais (da base)', r)}${linha('Sugeridas (desafio +'+Math.round((s.fator_desafio-1)*100)+'%)', g)}</table></div></div>`;
+  }
+  h += `<div class="card"><p class="card-title">Detalhe por vendedor</p><div class="scroll tw"><table><tr><th>Vendedor</th><th>Canal</th><th>Sen.</th><th>Status</th><th>Meta</th><th>Realizado</th><th>% atingido</th><th>Acel.</th><th>Comissão</th></tr>
+    ${j.detalhe.map(d=>`<tr><td>${esc(d.nome)}</td><td>${NC[d.canal]||esc(d.canal)}</td><td>${NS[d.senioridade]||esc(d.senioridade)}</td><td>${esc(d.status_mes)}</td><td>${fmt0(d.meta)}</td><td>${fmt0(d.realizado)}</td>
+    <td class="${d.pct_atingido<80?'red':d.pct_atingido<100?'amber':'green'}"><strong>${pc(d.pct_atingido,0)}</strong></td><td>${d.elegivel?d.acelerador.toFixed(2).replace('.',',')+'×':'—'}</td><td>${fmt0(d.comissao)}</td></tr>`).join('')}</table></div></div>`;
+  $('cen-res').innerHTML = h;
+};
+
+/* ---------- Fechamento ---------- */
+function montarFechamento(){
+  if (!E) return;
+  $('f-campos').innerHTML = E.vendedores.map(v=>`<div><label>${esc(v.nome)} <small class="hint">${NC[v.canal]||''}</small></label><input type="number" min="0" data-f="${esc(v.id)}" placeholder="MRR realizado (R$)"></div>`).join('');
+}
+$('b-zero').onclick = () => document.querySelectorAll('[data-f]').forEach(i=>i.value='');
+$('b-prefill').onclick = async () => {
+  const j = await api('/api/simulacao', {mes:+$('f-mes').value, ano:+$('f-ano').value, fator_desafio:+$('f-fator').value});
+  if (j.status!=='ok'){ $('fech-res').innerHTML = erro('Não há realizado na base para este mês. '+(j.mensagem||'')); return; }
+  const mp = {}; j.detalhe.forEach(d => mp[d.vendedor_id]=d.realizado);
+  document.querySelectorAll('[data-f]').forEach(i => { i.value = mp[i.dataset.f]!=null?mp[i.dataset.f]:''; });
+  $('fech-res').innerHTML = '<div class="alert a-ok">✓ Realizado da base preenchido. Confira e calcule.</div>';
+};
+$('b-fech').onclick = async () => {
+  const realizados = {}; document.querySelectorAll('[data-f]').forEach(i => { if (i.value!=='') realizados[i.dataset.f] = +i.value; });
+  if (!Object.keys(realizados).length){ $('fech-res').innerHTML = '<div class="alert a-warn">Informe o MRR realizado de ao menos um vendedor.</div>'; return; }
+  $('fech-res').innerHTML = loading('Processando fechamento...');
+  const j = await api('/api/fechamento', {mes:+$('f-mes').value, ano:+$('f-ano').value, fator_desafio:+$('f-fator').value, realizados, meta_empresa:$('f-emp').value});
+  if (j.status!=='ok'){ $('fech-res').innerHTML = erro(j.mensagem); return; }
+  const r = j.resumo, card = (l,v,c) => `<div class="metric"><div class="lbl">${l}</div><div class="val ${c||''}">${v}</div></div>`;
+  let h = `<div class="card"><p class="card-title">Resumo do time · ${MESES[j.mes-1]}/${j.ano}</p><div class="metrics">
+    ${card('Vendedores no cálculo', r.n)}${card('Soma das metas', fmt0(r.soma_metas))}${card('Realizado', fmt0(r.soma_realizado))}
+    ${card('Realizado ÷ metas', pc(r.aderencia_time_pct,0))}${card('Elegíveis', r.elegiveis+' ('+pc(r.pct_elegiveis,0)+')')}
+    ${card('Total de comissões', fmt0(r.custo_comissoes),'green')}${card('Valor contratado', fmt0(r.valor_contratado))}${card('Comissão ÷ contratado', pc(r.taxa_efetiva_pct,2))}</div>
+    ${r.meta_empresa?`<div class="alert ${Math.abs(r.diferenca_metas_vs_empresa_pct)<=5?'a-ok':'a-warn'}">Soma das metas individuais: ${fmt0(r.soma_metas)} · meta da empresa: ${fmt0(r.meta_empresa)} · diferença de ${pc(r.diferenca_metas_vs_empresa_pct,1)}.</div>`:''}
+    ${j.sem_meta.length?`<div class="alert a-warn">${j.sem_meta.length} vendedor(es) sem meta calculável (histórico insuficiente): ${j.sem_meta.map(x=>esc(x.nome)).join(', ')}.</div>`:''}</div>`;
+  h += `<div class="card"><p class="card-title">Detalhamento por vendedor</p><div class="tw scroll"><table><tr><th>Vendedor</th><th>Canal</th><th>Sen.</th><th>Meta</th><th>MRR</th><th>% ating.</th><th>Situação</th><th>Acel.</th><th>Comissão</th><th>Contratado</th><th>Taxa efetiva</th></tr>
+    ${j.vendedores.map(v=>`<tr><td><strong>${esc(v.nome)}</strong>${v.status_meta!=='ok'?' <span class="badge b-amber">meta de baixa confiança</span>':''}</td><td>${NC[v.canal]||esc(v.canal)}</td><td>${NS[v.senioridade]||esc(v.senioridade)}</td>
+    <td>${fmt0(v.meta)}</td><td>${fmt0(v.mrr)}</td><td class="${v.pct_atingido<80?'red':v.pct_atingido<100?'amber':'green'}"><strong>${pc(v.pct_atingido,0)}</strong></td>
+    <td><span class="badge ${v.elegivel?'b-green':'b-red'}">${v.elegivel?'Elegível':'Não elegível'}</span></td><td>${v.elegivel?v.acelerador.toFixed(2).replace('.',',')+'×':'—'}</td>
+    <td><strong>${fmt(v.comissao_final)}</strong></td><td>${fmt0(v.valor_contratado)}</td><td>${v.elegivel?pc(v.taxa_efetiva_pct,2):'—'}</td></tr>`).join('')}</table></div></div>`;
+  $('fech-res').innerHTML = h;
+};
+
+/* ---------- Evidências ---------- */
+async function carregarEvidencias(){
+  const d = await api('/api/evidencias'); loaded.ev = true;
+  if (!d.estudo_impacto){ $('ev-res').innerHTML = erro('Evidências indisponíveis.'); return; }
+  const e = d.estudo_impacto, b = d.backtest;
+  let h = `<div class="card"><p class="card-title">${esc(e.titulo)}</p>
+    <p style="font-size:13px;margin-bottom:6px"><strong>${esc(e.vigencia)}.</strong> ${esc(e.periodo)}.</p>
+    <p class="gray" style="font-size:12px;margin-bottom:10px">Métrica: ${esc(e.metrica)}.</p>
+    <div class="metrics" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr))">
+    ${e.canais.map(c=>`<div class="metric"><div class="lbl">${esc(c.canal)}</div><div class="val green">+${String(c.aceleracao_pp).replace('.',',')} p.p.</div>
+      <small class="hint">YoY antes ${pc(c.yoy_antes)} → depois ${pc(c.yoy_depois)}</small></div>`).join('')}</div>
+    <p style="font-size:13px;margin:12px 0 6px"><strong>${esc(e.dezembro_titulo)}</strong></p>
+    <div class="metrics">${e.dezembro.map(c=>`<div class="metric"><div class="lbl">${esc(c.canal)} · dez/25 vs dez/24</div><div class="val green">+${String(c.variacao_pct).replace('.',',')}%</div></div>`).join('')}</div>
+    <p class="gray" style="font-size:12px">${esc(e.fonte)}</p>
+    <p style="font-size:12px;font-weight:600;margin-top:10px">Como ler este estudo</p><ul class="lista">${e.limitacoes.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`;
+  const tab = (rows) => `<div class="tw"><table><tr><th>Método</th><th>Erro (WAPE)</th><th>Viés</th><th>Dentro de ±10%</th></tr>
+    ${rows.map((r,i)=>`<tr class="${i===0?'hl':''}"><td>${esc(r['Método'])}</td><td><strong>${pc(r['WAPE (%)'])}</strong></td><td>${pc(r['Viés (%)'])}</td><td>${pc(r['Dentro de ±10% (%)'])}</td></tr>`).join('')}</table></div>`;
+  h += `<div class="card"><p class="card-title">${esc(b.titulo)}</p>
+    <p style="font-size:13px;margin-bottom:6px">Base real anonimizada: <strong>${b.base.vendedores}</strong> vendedores, ${esc(b.base.periodo)} (${b.base.linhas} linhas). ${b.base.previsoes} previsões avaliadas, de ${b.base.vendedores_avaliados} vendedores com histórico suficiente.</p>
+    <p class="gray" style="font-size:12px;margin-bottom:10px">${esc(b.metodo)}</p>
+    <p style="font-size:12px;font-weight:600;margin-bottom:6px">Todos os meses</p>${tab(b.todos)}
+    <p style="font-size:12px;font-weight:600;margin:12px 0 6px">Somente meses de Meta Cheia</p>${tab(b.cheia)}
+    <p style="font-size:12px;font-weight:600;margin-top:12px">Leitura</p><ul class="lista">${b.leitura.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+    <p style="font-size:12px;font-weight:600;margin-top:10px">Limitações</p><ul class="lista">${b.limitacoes.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+    <p class="gray" style="font-size:12px;margin-top:8px">Métricas percentuais da base real. A demonstração interativa usa um subconjunto reescalado, por isso seus números diferem.</p></div>`;
+  $('ev-res').innerHTML = h;
+}
+
+/* ---------- Parâmetros ---------- */
+async function carregarParametros(){
+  const j = await api('/api/config'); if (j.status!=='ok') return;
+  const c = j.config, a = c.aceleracao;
+  const inp = (id,l,v,st) => `<div><label>${l}</label><input type="number" id="${id}" value="${v}" step="${st||0.1}"></div>`;
+  $('par-res').innerHTML = `<div class="card"><p class="card-title">Parâmetros do modelo (valores validados em ambiente real)</p>
+    <p class="gray" style="font-size:13px;margin-bottom:10px">Cada empresa cliente pode ajustar os seus. As mudanças valem só para a sua sessão.</p>
+    <p style="font-size:12px;font-weight:600;margin-bottom:6px">Coeficiente por canal</p><div class="form-row">
+      ${inp('k-crm','Inbound CRM',c.coef_canal.inbound_crm)}${inp('k-prm','Inbound PRM',c.coef_canal.inbound_prm)}${inp('k-out','Outbound',c.coef_canal.outbound)}</div>
+    <p style="font-size:12px;font-weight:600;margin-bottom:6px">Coeficiente por senioridade</p><div class="form-row">
+      ${inp('k-jr','Júnior',c.coef_senioridade.jr)}${inp('k-pl','Pleno',c.coef_senioridade.pl)}${inp('k-sr','Sênior',c.coef_senioridade.sr)}</div>
+    <p style="font-size:12px;font-weight:600;margin-bottom:6px">Curva de aceleração</p><div class="form-row">
+      ${inp('a-lim','Limiar de elegibilidade (%)',a.limiar,1)}${inp('a-desc','Faixa 1: % − X, em p.p.',a.desconto_faixa1,1)}${inp('a-ini','Início da faixa 2 (%)',a.inicio_faixa2,1)}
+      ${inp('a-inc','Faixa 2: inclinação',a.inclinacao_faixa2,0.05)}${inp('a-fim','Fim da faixa 2 (%)',a.fim_faixa2,1)}${inp('a-teto','Teto do acelerador',a.teto,0.05)}</div>
+    <div class="form-row">
+      <div><label>Percentual quebrado (ex.: 79,6%)</label><select id="k-arr"><option value="piso" ${c.arredondamento==='piso'?'selected':''}>Considerar o inteiro abaixo (79%)</option><option value="mais_proximo" ${c.arredondamento==='mais_proximo'?'selected':''}>Arredondar (80%)</option><option value="nenhum" ${c.arredondamento==='nenhum'?'selected':''}>Usar o valor exato</option></select></div>
+      ${inp('k-mc','Meses de contrato (padrão)',c.meses_contrato,1)}${inp('k-fd','Fator de desafio padrão',c.fator_desafio,0.01)}</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-primary" id="b-salvar">Salvar parâmetros</button><button class="btn btn-secondary" id="b-reset">Restaurar padrão</button></div>
+    <div id="par-msg"></div></div>
+    <div class="card"><p class="card-title">Tabela de aceleradores resultante</p><div class="acel-grid">
+      ${j.tabela.map(t=>`<div><span>${t.pct}%</span><strong>${(t.acelerador*100).toFixed(1).replace('.',',')}%</strong></div>`).join('')}</div>
+      <p class="gray" style="font-size:12px;margin-top:8px">Abaixo do limiar o vendedor não é elegível. Acima do fim da faixa 2 o acelerador fica congelado no teto, mas a comissão continua crescendo com o MRR.</p></div>`;
+  $('b-salvar').onclick = async () => {
+    const v = id => +$(id).value;
+    const r = await api('/api/config', {coef_canal:{inbound_crm:v('k-crm'),inbound_prm:v('k-prm'),outbound:v('k-out')},
+      coef_senioridade:{jr:v('k-jr'),pl:v('k-pl'),sr:v('k-sr')},
+      aceleracao:{limiar:v('a-lim'),desconto_faixa1:v('a-desc'),inicio_faixa2:v('a-ini'),inclinacao_faixa2:v('a-inc'),fim_faixa2:v('a-fim'),teto:v('a-teto')},
+      arredondamento:$('k-arr').value, meses_contrato:v('k-mc'), fator_desafio:v('k-fd')});
+    if (r.status==='ok'){ await carregarParametros(); $('par-msg').innerHTML = '<div class="alert a-ok">✓ Parâmetros salvos.</div>'; calcular(); }
+    else $('par-msg').innerHTML = erro(r.mensagem);
+  };
+  $('b-reset').onclick = async () => { await api('/api/config/reset', {}); await carregarParametros(); $('par-msg').innerHTML = '<div class="alert a-ok">✓ Valores padrão restaurados.</div>'; calcular(); };
+}
+
+carregarEstado().then(calcular);
+</script>
+</body>
+</html>
